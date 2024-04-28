@@ -1,9 +1,11 @@
 #include <iostream>
+#include <vector>
+#include <ctime>
 
 // Prototypes of Funcitons used that are not the main() 
 void ScoreNewGame();
 void MainMenu();
-std::string ChooseHomeTeam();
+std::vector<std::string> ChooseTeam(bool isHomeTeam = false);
 std::string SelectTeam(int TeamSelection);
 std::string SelectBallpark(int BallparkChoice);
 
@@ -67,28 +69,40 @@ void MainMenu()
 
 void ScoreNewGame()
 {
-	std::string HomeTeamInfo[1], AwayTeam, date;
+	std::time_t date = std::time(0); // TODO: Get current Date (maybe put functionality for user to enter date?)
 
 	// Choose Home Team Info
-	HomeTeamInfo[1] = ChooseHomeTeam();
+	std::vector <std::string> HomeTeamData = ChooseTeam(true);
 
-	std::string HomeTeam = HomeTeamInfo[0];
-	std::string Ballpark = HomeTeamInfo[1];
+	std::string HomeTeam = HomeTeamData[0];
+	std::string Ballpark = HomeTeamData[1];
 
 	// Choose Away Team
+	std::vector<std::string> AwayTeamData = ChooseTeam(false);
 
-	std::cout << "The 'Away Team' will be taking on the " << HomeTeam << " at " << Ballpark << " on " << date << std::endl;
+	std::string AwayTeam = AwayTeamData[0];
+
+	std::cout << "The " << AwayTeam << " will be taking on the " << HomeTeam << " at " << Ballpark << " on " << date << std::endl;
+
+
 
 	// Play Game through 9 innings
 		// TODO: implement extra innings functionality
 }
 
-std::string ChooseHomeTeam()
+// TODO: Come up with a way to check isHomeTeam once rather than twice in that function
+std::vector<std::string> ChooseTeam(bool isHomeTeam)
 {
 	int TeamChoice = 0;
-	std::string HomeTeam, Ballpark;
+	std::string TeamSelection, Ballpark, TeamSide;
+	std::vector<std::string> TeamData;
 
-	std::cout << "Choose Number corresponding with the Home Team" << std::endl;
+	if (isHomeTeam == true)
+		TeamSide = "Home";
+	else
+		TeamSide = "Away";
+
+	std::cout << "Choose Number corresponding with the " << TeamSide << " Team" << std::endl;
 
 	// Home Team Selection
 	std::cout << "---------------------------------------------------------------------------------------------------------------------------------" << std::endl;
@@ -116,20 +130,27 @@ std::string ChooseHomeTeam()
 		{
 			std::cout << "Going back to main menu." << std::endl;
 			MainMenu();
+			break;
 		}
 		
 		else
 		{
-			HomeTeam = SelectTeam(TeamChoice);
+			TeamSelection = SelectTeam(TeamChoice);
 			Ballpark = SelectBallpark(TeamChoice);
 			break;
 		}
 	}
 
-	// Store the Home Team and Ballpark into an array to return to previous function
-	std::string HomeTeamInfo[] = {HomeTeam, Ballpark};
+	// Store the Home Team and Ballpark into a vector to return Selected Team's Data
+	if (isHomeTeam == true)
+	{
+		TeamData.push_back(TeamSelection);
+		TeamData.push_back(Ballpark);
+	}
+	else
+		TeamData.push_back(TeamSelection);
 
-	return HomeTeamInfo[1];
+	return TeamData;
 }
 
 std::string SelectTeam(int TeamSelection)
