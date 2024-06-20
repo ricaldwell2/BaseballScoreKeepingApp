@@ -1,75 +1,94 @@
 #include <iostream>
 #include <vector>
-#include <ctime>
+#include <time.h>
+
+//#pragma warning(disable : 4996)
 
 // Prototypes of Funcitons used that are not the main() 
-void ScoreNewGame();
 void MainMenu();
+std::string GetCurrentDate();
+std::vector<std::string> ScoreNewGame();
 std::vector<std::string> ChooseTeam(bool isHomeTeam = false);
 std::string SelectTeam(int TeamSelection);
 std::string SelectBallpark(int BallparkChoice);
 
 int main()
 {
-	std::cout << "---------------------Baseball Scorekeeper------------------------" << std::endl;
-
 	MainMenu();
 
-	//system("PAUSE");
-	//return 0;
+	system("PAUSE");
+	return 0;
 }
 
 void MainMenu()
 {
 	int choice = 0;
 
-	// Options for Main Menu...TODO: Need to find other options to include in the Menu...new functionality??
-	std::cout << std::endl;
-	std::cout << "Main Menu" << std::endl;
-	std::cout << "1. Score a new Game" << std::endl;
-	std::cout << "2. View Previous Games Scored" << std::endl;
-	std::cout << "3. See Overall Scoring Stats" << std::endl;
-	std::cout << "4. Quit" << std::endl;
-	// idea for new funcitonality 'Compare Score Card to official MLB Score Card'
-	// query pitching rotation, players
-	// input historic information based on data online??
-
-	std::cout << "Input: ";
-	std::cin >> choice;
-	do 
+	while (choice <= 3 && choice >= 0)
 	{
-		while (choice <= 3 && choice >= 0)
+		// Options for Main Menu...TODO: Need to find other options to include in the Menu...new functionality??
+		std::cout << "---------------------Baseball Scorekeeper------------------------" << std::endl;
+		std::cout << std::endl;
+		std::cout << "Main Menu" << std::endl;
+		std::cout << "1. Score a new Game" << std::endl;
+		std::cout << "2. View Previous Games Scored" << std::endl;
+		std::cout << "3. See Overall Scoring Stats" << std::endl;
+		std::cout << "4. Quit" << std::endl;
+		// idea for new funcitonality 'Compare Score Card to official MLB Score Card'
+		// query pitching rotation, players
+		// input historic information based on data online??
+
+		std::cout << "Input: ";
+		std::cin >> choice;
+
+		if (choice == 1)
 		{
-			if (choice == 1)
-			{
-				ScoreNewGame();
-				break;
-			}
-			else if (choice == 2)
-			{
-				std::cout << "Functionality Pending...Make Another Selection" << std::endl;
-				MainMenu();
-				break;
-			}
-			else if (choice == 3)
-			{
-				std::cout << "Functionality Pending...Make Another Selection" << std::endl;
-				MainMenu();
-				break;
-			}
-			else
-			{
-				std::cout << "Please Select a Number Corresponding with a Menu Option" << std::endl;
-				MainMenu();
-			}
+			ScoreNewGame();
 		}
-	} while (choice != 4);
-	
+		else if (choice == 2)
+		{
+			std::cout << "Functionality Pending...Make Another Selection" << std::endl;
+			MainMenu();
+		}
+		else if (choice == 3)
+		{
+			std::cout << "Functionality Pending...Make Another Selection" << std::endl;
+			MainMenu();
+		}
+		else if (choice == 4)
+		{
+			//system("PAUSE");
+			return;
+		}
+		else
+		{
+			std::cout << "Please Select a Number Corresponding with a Menu Option" << std::endl;
+			MainMenu();
+		}
+	}
 }
 
-void ScoreNewGame()
+std::string GetCurrentDate()
 {
-	std::time_t date = std::time(0); // TODO: Get current Date (maybe put functionality for user to enter date?)
+	// this will return the current date??
+	//std::string date;
+
+	char currDate[30];
+	time_t t = time(NULL);
+	struct tm tm = *localtime(&t);
+	sprintf(currDate, "%d/%d/%d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday);
+	std::cout << currDate;
+	return currDate;
+
+	//return date;
+}
+
+std::vector<std::string> ScoreNewGame()
+{
+	//std::string date = GetCurrentDate();
+	std::string date = "06/19/2024";
+
+	std::vector<std::string> gameData;
 
 	// Choose Home Team Info
 	std::vector <std::string> HomeTeamData = ChooseTeam(true);
@@ -83,14 +102,16 @@ void ScoreNewGame()
 	std::string AwayTeam = AwayTeamData[0];
 
 	std::cout << "The " << AwayTeam << " will be taking on the " << HomeTeam << " at " << Ballpark << " on " << date << std::endl;
+	std::cout << std::endl;
 
 
 
 	// Play Game through 9 innings
 		// TODO: implement extra innings functionality
+
+	return gameData;
 }
 
-// TODO: Come up with a way to check isHomeTeam once rather than twice in that function
 std::vector<std::string> ChooseTeam(bool isHomeTeam)
 {
 	int TeamChoice = 0;

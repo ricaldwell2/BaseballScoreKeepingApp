@@ -1,2 +1,4 @@
 ﻿  Main.cpp
-  Project1.vcxproj -> C:\Users\riley\Projects\BaseballScoreKeepingApp\x64\Debug\Project1.exe
+C:\Users\riley\Projects\BaseballScoreKeepingApp\Project1\Main.cpp(19,6): warning C4101: 'number': unreferenced local variable
+C:\Users\riley\Projects\BaseballScoreKeepingApp\Project1\Main.cpp(80,18): error C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\riley\Projects\BaseballScoreKeepingApp\Project1\Main.cpp(81,2): error C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
