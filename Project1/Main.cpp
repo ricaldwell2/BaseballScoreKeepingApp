@@ -375,3 +375,95 @@ std::string SelectBallpark(int BallparkChoice)
 	
 	return Ballpark;
 }
+
+std::vector<int> InningData(bool topInning, std::string HomeTeam, std::string AwayTeam)
+{
+	// Inning Variables
+	int pitchCount = 0, balls = 0, strikes = 0, outs = 0, runs = 0;
+	int choice = 0;
+	std::string fieldingTeam;
+	std::string hittingTeam;
+
+	// Pitch Outcomes
+	if (topInning == true)
+	{
+		fieldingTeam = HomeTeam;
+		hittingTeam = AwayTeam;
+	}
+	else
+	{
+		fieldingTeam = AwayTeam;
+		hittingTeam = HomeTeam;
+	}
+
+	// Message to show who is hitting and how is fielding
+	std::cout << "The " << fieldingTeam << " is taking the field." << std::endl;
+	std::cout << "The " << hittingTeam << " is going to bat." << std::endl;
+	
+	// While outs is less than 3
+	while (outs != 3)
+	{
+		while (strikes < 3 || balls < 4)
+		{
+			std::cout << "Pitch thrown, what is the outcome?" << std::endl;
+			std::cout << "1. Ball" << std::endl;
+			std::cout << "2. Strike" << std::endl;
+			std::cout << "3. Hit" << std::endl;
+			std::cout << "4. Ball 4" << std::endl;
+			std::cout << "5. Strike 3 Swinging" << std::endl;
+			std::cout << "6. Strike 3 Looking" << std::endl;
+			std::cin >> choice;
+
+			if (choice == 1)
+			{
+				++balls;
+				std::cout << "Balls " << balls << " : Strikes " << strikes << std::endl;
+			}
+			else if (choice == 2)
+			{
+				++strikes;
+				std::cout << "Balls " << balls << " : Strikes" << strikes << std::endl;
+			}
+			else if (choice == 3)
+			{
+				// hit outcome...maybe a function?
+			}
+			else if (choice == 4)
+			{
+				if (balls < 3)
+					std::cout << "Unable to make this choice, since there haven't been enough balls." << std::endl;
+				else
+				{
+					++balls;
+					std::cout << "Ball 4, runner takes base." << std::endl;
+				}
+			}
+			else if (choice == 5)
+			{
+				if (strikes < 2)
+					std::cout << "Unable to make this choice, since there haven't been enough strikes." << std::endl;
+				else
+				{
+					++strikes;
+					std::cout << "Strike 3, runner is out." << std::endl;
+					++outs;
+				}
+			}
+			else if (choice == 6)
+			{
+				if (strikes < 2)
+					std::cout << "Unable to make this choice, since there haven't been enough strikes." << std::endl;
+				else
+				{
+					++strikes;
+					std::cout << "Strike 3, runner is out." << std::endl;
+					++outs;
+				}
+			}
+		}
+	}
+
+	
+		
+
+}
