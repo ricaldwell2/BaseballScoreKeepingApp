@@ -11,6 +11,7 @@ std::vector<std::string> ScoreNewGame();
 std::vector<std::string> ChooseTeam(bool isHomeTeam = false);
 std::string SelectTeam(int TeamSelection);
 std::string SelectBallpark(int BallparkChoice);
+std::vector<int> InningData(int inningNumber, bool topInning, std::string HomeTeam, std::string AwayTeam);
 
 int main()
 {
@@ -75,8 +76,8 @@ std::string GetCurrentDate()
 
 	char currDate[30];
 	time_t t = time(NULL);
-	struct tm tm = *localtime(&t);
-	sprintf(currDate, "%d/%d/%d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday);
+	//struct tm tm = *localtime(&t);
+	//sprintf(currDate, "%d/%d/%d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday);
 	std::cout << currDate;
 	return currDate;
 
@@ -91,23 +92,29 @@ std::vector<std::string> ScoreNewGame()
 	std::vector<std::string> gameData;
 
 	// Choose Home Team Info
-	std::vector <std::string> HomeTeamData = ChooseTeam(true);
+	std::vector <std::string> HomeTeamBallpark = ChooseTeam(true);
 
-	std::string HomeTeam = HomeTeamData[0];
-	std::string Ballpark = HomeTeamData[1];
+
+	std::string HomeTeam = HomeTeamBallpark[0];
+	std::string Ballpark = HomeTeamBallpark[1];
 
 	// Choose Away Team
-	std::vector<std::string> AwayTeamData = ChooseTeam(false);
+	std::vector<std::string> AwayTeamBallpark = ChooseTeam(false);
 
-	std::string AwayTeam = AwayTeamData[0];
+	std::string AwayTeam = AwayTeamBallpark[0];
 
 	std::cout << "The " << AwayTeam << " will be taking on the " << HomeTeam << " at " << Ballpark << " on " << date << std::endl;
 	std::cout << std::endl;
 
-
+	// These vectors hold data for both teams
+	std::vector <int> HomeTeamData;
+	std::vector <int> AwayTeamData;
 
 	// Play Game through 9 innings
 		// TODO: implement extra innings functionality
+	//InningData(bool topInning, std::string HomeTeam, std::string AwayTeam);
+	InningData(1, true, HomeTeam, AwayTeam);
+	InningData(1, false, HomeTeam, AwayTeam);
 
 	return gameData;
 }
@@ -376,13 +383,16 @@ std::string SelectBallpark(int BallparkChoice)
 	return Ballpark;
 }
 
-std::vector<int> InningData(bool topInning, std::string HomeTeam, std::string AwayTeam)
+std::vector<int> InningData(int inningNumber, bool topInning, std::string HomeTeam, std::string AwayTeam)
 {
 	// Inning Variables
-	int pitchCount = 0, balls = 0, strikes = 0, outs = 0, runs = 0;
+	int pitchCount = 0, balls = 0, strikes = 0, outs = 0, hits = 0, runsHomeTeam = 0, runsAwayTeam = 0;
 	int choice = 0;
+	int hitType = 0, hitChoice = 0, strikeChoice = 0;
+	bool runnerOnFirst = false, runnerOnSecond = false, runnerOnThird = false;
 	std::string fieldingTeam;
 	std::string hittingTeam;
+	std::vector<int> gameData;
 
 	// Pitch Outcomes
 	if (topInning == true)
@@ -396,74 +406,162 @@ std::vector<int> InningData(bool topInning, std::string HomeTeam, std::string Aw
 		hittingTeam = HomeTeam;
 	}
 
+	// Inning Data for the user
+	if (topInning)
+		std::cout << "Top of Inning " << inningNumber << std::endl;
+	else
+		std::cout << "Bottom of Inning " << inningNumber << std::endl;
+
 	// Message to show who is hitting and how is fielding
-	std::cout << "The " << fieldingTeam << " is taking the field." << std::endl;
-	std::cout << "The " << hittingTeam << " is going to bat." << std::endl;
+	std::cout << "The " << fieldingTeam << " are taking the field." << std::endl;
+	std::cout << "The " << hittingTeam << " are going to bat." << std::endl;
 	
 	// While outs is less than 3
 	while (outs != 3)
 	{
 		while (strikes < 3 || balls < 4)
 		{
+			std::cout << HomeTeam << " " << runsHomeTeam << " - " << AwayTeam << " " << runsAwayTeam << std::endl;
+			std::cout << "Field View - " << "1B: " << runnerOnFirst << " 2B: " << runnerOnSecond << " 3B: " << runnerOnThird << std::endl;
+			std::cout << "Outs: " << outs << std::endl;
+			std::cout << "----------------------------------------------------------------------------------------" << std::endl;
 			std::cout << "Pitch thrown, what is the outcome?" << std::endl;
 			std::cout << "1. Ball" << std::endl;
 			std::cout << "2. Strike" << std::endl;
 			std::cout << "3. Hit" << std::endl;
-			std::cout << "4. Ball 4" << std::endl;
-			std::cout << "5. Strike 3 Swinging" << std::endl;
-			std::cout << "6. Strike 3 Looking" << std::endl;
 			std::cin >> choice;
 
 			if (choice == 1)
 			{
-				++balls;
-				std::cout << "Balls " << balls << " : Strikes " << strikes << std::endl;
+				if (balls < 3)
+				{
+					++balls;
+					std::cout << "Balls " << balls << " : Strikes " << strikes << std::endl;
+				}
+				else if (balls == 3)
+				{
+					++balls;
+					std::cout << "Ball " << balls << ", runner takes base." << std::endl;
+					
+					// Attempt to move runners (if possible) TODO: Work on this logic....will be needed as base for rest of application
+					if (runnerOnFirst)
+					{
+						runnerOnFirst = false;
+						runnerOnSecond = true;
+					}
+					if(runnerOnSecond)
+					{
+						runnerOnSecond = false;
+						runnerOnThird = true;
+					}
+					if (runnerOnThird)
+					{
+						runnerOnThird = false;
+						if (topInning)
+							++runsAwayTeam;
+						else
+							++runsHomeTeam;
+					}
+					runnerOnFirst = true;
+					
+					// reset balls and strikes
+					balls = 0;	
+					strikes = 0;
+					break;
+				}
+				
 			}
 			else if (choice == 2)
 			{
-				++strikes;
-				std::cout << "Balls " << balls << " : Strikes" << strikes << std::endl;
+				if (strikes < 2)
+				{
+					++strikes;
+					std::cout << "Balls " << balls << " : Strikes " << strikes << std::endl;
+				}
+				else if (strikes == 2)
+				{
+					++strikes;
+
+					std::cout << "Was the Strike..." << std::endl;
+					std::cout << "1. Looking" << std::endl;
+					std::cout << "2. Swinging" << std::endl;
+					std::cout << "3. Foul Tip" << std::endl;
+					std::cin >> strikeChoice;
+					
+					if (strikeChoice == 1)
+					{
+						std::cout << "Strike " << strikes << " Strikeout Looking" << std::endl;
+						++outs;
+
+						// reset balls and strikes
+						balls = 0;
+						strikes = 0;
+						break;
+					}
+					else if (strikeChoice == 2)
+					{
+						std::cout << "Strike " << strikes << " Strikeout Swinging" << std::endl;
+						++outs;
+
+						// reset balls and strikes
+						balls = 0;
+						strikes = 0;
+						break;
+					}
+					else if (strikeChoice == 3)
+					{
+						std::cout << "Strike " << strikes << " Strikeout Foul Tip" << std::endl;
+						++outs;
+
+						// reset balls and strikes
+						balls = 0;
+						strikes = 0;
+						break;
+					}
+					else
+					{
+						std::cout << "Select a response from the list." << std::endl;
+					}
+				}
 			}
 			else if (choice == 3)
 			{
 				// hit outcome...maybe a function?
-			}
-			else if (choice == 4)
-			{
-				if (balls < 3)
-					std::cout << "Unable to make this choice, since there haven't been enough balls." << std::endl;
-				else
-				{
-					++balls;
-					std::cout << "Ball 4, runner takes base." << std::endl;
-				}
-			}
-			else if (choice == 5)
-			{
-				if (strikes < 2)
-					std::cout << "Unable to make this choice, since there haven't been enough strikes." << std::endl;
-				else
-				{
-					++strikes;
-					std::cout << "Strike 3, runner is out." << std::endl;
-					++outs;
-				}
-			}
-			else if (choice == 6)
-			{
-				if (strikes < 2)
-					std::cout << "Unable to make this choice, since there haven't been enough strikes." << std::endl;
-				else
-				{
-					++strikes;
-					std::cout << "Strike 3, runner is out." << std::endl;
-					++outs;
-				}
+				++hits;
+
+				std::cout << "What is the Hit Type?" << std::endl;
+				std::cout << "1. Single" << std::endl;
+				std::cout << "2. Double" << std::endl;
+				std::cout << "3. Triple" << std::endl;
+				std::cout << "4. Home Rune" << std::endl;
+				std::cin >> hitChoice;
+				
+				//getBaseData(hitType, );
+				
 			}
 		}
 	}
 
+	gameData.push_back(pitchCount);
+	gameData.push_back(hits);
+	gameData.push_back(runsHomeTeam);
+	gameData.push_back(runsAwayTeam);
 	
-		
+	return gameData;
+}
 
+std::vector<bool> getBaseData(int hitType, bool first, bool second, bool third)
+{
+	std::vector<bool> baseData;
+
+	if (hitType == 1)
+	{
+		// runner on 
+	}
+
+	baseData.push_back(third);
+	baseData.push_back(second);
+	baseData.push_back(first);
+
+	return baseData;
 }
