@@ -430,6 +430,9 @@ std::vector<int> InningData(int inningNumber, bool topInning, std::string HomeTe
 			std::cout << "2. Strike" << std::endl;
 			std::cout << "3. Hit" << std::endl;
 			std::cin >> choice;
+			// TODO: Advance Base runner (could be due to a fielding error)
+			// TODO: Balk
+			// TODO: Intentional Walk
 
 			if (choice == 1)
 			{
@@ -444,12 +447,12 @@ std::vector<int> InningData(int inningNumber, bool topInning, std::string HomeTe
 					std::cout << "Ball " << balls << ", runner takes base." << std::endl;
 					
 					// Attempt to move runners (if possible) TODO: Work on this logic....will be needed as base for rest of application
-					if (runnerOnFirst)
+					if (runnerOnFirst && !runnerOnSecond && !runnerOnThird)
 					{
 						runnerOnFirst = false;
 						runnerOnSecond = true;
 					}
-					if(runnerOnSecond)
+					else if(!runnerOnFirst && runnerOnSecond && !runnerOnThird)
 					{
 						runnerOnSecond = false;
 						runnerOnThird = true;
@@ -550,15 +553,174 @@ std::vector<int> InningData(int inningNumber, bool topInning, std::string HomeTe
 	return gameData;
 }
 
-std::vector<bool> getBaseData(int hitType, bool first, bool second, bool third)
+std::vector<bool> getBaseData(int hitType, bool first, bool second, bool third, int runs)
 {
+	//////////////////////////////////////////////
+	//
+	//	Guide to Hit Types
+	//
+	//	1 = Walk
+	//	2 = Single
+	//	3 = Double
+	//	4 = Triple
+	//	5 = Home Run
+	// 
+	//	NOTE: Generally advancing runner will be
+	///////////////////////////////////////////////
+
 	std::vector<bool> baseData;
 
-	if (hitType == 1)
+	// In the event of a walk or a single
+	if (hitType == 1 || hitType == 2)
 	{
-		// runner on 
+
+		if (first && !second && !third)
+		{
+			first = true;
+			second = true;
+			third = false;
+		}
+		else if (first && second && !third)
+		{
+			first = true;
+			second = true;
+			third = true;
+		}
+		else if (first && second && third)
+		{
+			first = true;
+			second = true;
+			third = true;
+			++runs;
+		}
+		else if (first && !second && third)
+		{
+			first = true;
+			second = true;
+			third = false;
+			++runs;
+		}
+		else if (!first && second && third)
+		{
+			first = true;
+			second = false;
+			third = true;
+			++runs;
+		}
+		else if (!first && !second && third)
+		{
+			first = true;
+			second = false;
+			third = false;
+			++runs;
+		}
+		else if (!first && second && !third)
+		{
+			first = true;
+			second = false;
+			third = true;
+		}
+		else if (!first && !second && !third)
+		{
+			first = true;
+			second = false;
+			third = false;
+		}
+		else
+		{
+			std::cout << "Found a base mix you haven't written yet!!!" << std::endl;
+		}
+	}
+	else if (hitType == 3)	// Double
+	{
+		if (first && second && third)
+		{
+			first = false;
+			second = true;
+			third = true;
+			runs = runs + 2;
+		}
+		else if (first && !second && !third)
+		{
+			first = false;
+			second = true;
+			third = true;
+		}
+		else if (first && second && !third)
+		{	
+			first = false;
+			second = true;
+			third = true;
+			++runs;
+		}
+		else if (!first && second && third)
+		{
+			first = false;
+			second = true;
+			third = true;
+			++runs;
+		}
+		else if (!first && !second && third)
+		{
+			first = false;
+			second = true;
+			third = false;
+			++runs;
+		}
+		else
+		{
+			std::cout << "Found a base mix you haven't written yet!!!" << std::endl;
+		}
+	}
+	else if (hitType == 4)	// Triple
+	{
+		if (first && second && third)
+		{
+
+		}
+		else
+		{
+			std::cout << "Found a base mix you haven't written yet!!!" << std::endl;
+		}
+	}
+	else if (hitType == 5)	// Home Run
+	{
+		if (first && second && third)	// Grand Slam
+		{
+			first = false;
+			second = false;
+			third = false;
+			runs = runs + 4;
+		}
+		else if ((first && !second && !third) ||
+			(!first && second && !third) ||
+			(!first && !second && third))	// One Runner On
+		{
+			first = false;
+			second = false;
+			third = false;
+			runs = runs + 2;
+		}
+		else if ((first && second && !third) ||
+				(first && !second && third) ||
+				(!first && second && third))	// 2 Runners On
+		{
+			first = false;
+			second = false;
+			third = false;
+			runs = runs + 3;
+		}
+		else
+		{
+			std::cout << "Found a base mix you haven't written yet!!!" << std::endl;
+		}
+	}
+	else
+	{
+		std::cout << "A proper hit type was not given." << std::endl;
 	}
 
+	baseData.push_back(runs);
 	baseData.push_back(third);
 	baseData.push_back(second);
 	baseData.push_back(first);
