@@ -9,6 +9,7 @@ void MainMenu();
 std::string GetCurrentDate();
 std::vector<std::string> ScoreNewGame();
 std::vector<std::string> ChooseTeam(bool isHomeTeam = false);
+std::string GetTeamAbbreviation(std::string Team);
 std::string SelectTeam(int TeamSelection);
 std::string SelectBallpark(int BallparkChoice);
 std::vector<int> InningData(int inningNumber, bool topInning, std::string HomeTeam, std::string AwayTeam);
@@ -383,13 +384,81 @@ std::string SelectBallpark(int BallparkChoice)
 	return Ballpark;
 }
 
+std::string GetTeamAbbreviation(std::string Team)
+{
+	std::string Abbreviation;
+
+	if (Team == "Arizona Diamondbacks")
+		Abbreviation = "AZ";
+	else if (Team == "Atlanta Braves")
+		Abbreviation = "ATL";
+	else if (Team == "Baltimore Orioles ")
+		Abbreviation = "BAL";
+	else if (Team == "Boston Red Sox")
+		Abbreviation = "BOS";
+	else if (Team == "Chicago Cubs")
+		Abbreviation = "CHC";
+	else if (Team == "Chicago White Sox")
+		Abbreviation = "CWS";
+	else if (Team == "Cincinnati Reds")
+		Abbreviation = "CIN";
+	else if (Team == "Cleveland Guardians")
+		Abbreviation = "CLE";
+	else if (Team == "Colorado Rockies")
+		Abbreviation = "COL";
+	else if (Team == "Detroit Tigers")
+		Abbreviation = "DET";
+	else if (Team == "Houston Astros")
+		Abbreviation = "HOU";
+	else if (Team == "Kansas City Royals")
+		Abbreviation = "KC";
+	else if (Team == "Los Angeles Angels")
+		Abbreviation = "LAA";
+	else if (Team == "Los Angeles Dodgers")
+		Abbreviation = "LAD";
+	else if (Team == "Miami Marlins")
+		Abbreviation = "MIA";
+	else if (Team == "Milwaukee Brewers")
+		Abbreviation = "MIL";
+	else if (Team == "Minnesota Twins")
+		Abbreviation = "MIN";
+	else if (Team == "New York Mets")
+		Abbreviation = "NYM";
+	else if (Team == "New York Yankees")
+		Abbreviation = "NYY";
+	else if (Team == "Oakland Athletics")
+		Abbreviation = "OAK";
+	else if (Team == "Philadelphia Phillies")
+		Abbreviation = "PHI";
+	else if (Team == "Pittsburgh Pirates")
+		Abbreviation = "PIT";
+	else if (Team == "San Diego Padres")
+		Abbreviation = "SD";
+	else if (Team == "San Francisco Giants")
+		Abbreviation = "SF";
+	else if (Team == "Seattle Mariners")
+		Abbreviation = "SEA";
+	else if (Team == "St. Louis Cardinals")
+		Abbreviation = "STL";
+	else if (Team == "Tampa Bay Rays")
+		Abbreviation = "TB";
+	else if (Team == "Texas Rangers")
+		Abbreviation = "TEX";
+	else if (Team == "Toronto Blue Jays")
+		Abbreviation = "TOR";
+	else if (Team == "Washington Nationals")
+		Abbreviation = "WSH";
+
+	return Abbreviation;
+}
+
 std::vector<int> InningData(int inningNumber, bool topInning, std::string HomeTeam, std::string AwayTeam)
 {
 	// Inning Variables
-	int pitchCount = 0, balls = 0, strikes = 0, outs = 0, hits = 0, runsHomeTeam = 0, runsAwayTeam = 0;
+	int pitchCount = 0, balls = 0, strikes = 0, outs = 0, hits = 0, runsHomeTeam = 0, runsAwayTeam = 0, runs = 0;
 	int choice = 0;
 	int hitType = 0, hitChoice = 0, strikeChoice = 0;
-	bool runnerOnFirst = false, runnerOnSecond = false, runnerOnThird = false;
+	int runnerOnFirst = 0, runnerOnSecond = 0, runnerOnThird = 0;
 	std::string fieldingTeam;
 	std::string hittingTeam;
 	std::vector<int> gameData;
@@ -399,11 +468,13 @@ std::vector<int> InningData(int inningNumber, bool topInning, std::string HomeTe
 	{
 		fieldingTeam = HomeTeam;
 		hittingTeam = AwayTeam;
+		runs = runsAwayTeam;
 	}
 	else
 	{
 		fieldingTeam = AwayTeam;
 		hittingTeam = HomeTeam;
+		runs = runsHomeTeam;
 	}
 
 	// Inning Data for the user
@@ -421,7 +492,7 @@ std::vector<int> InningData(int inningNumber, bool topInning, std::string HomeTe
 	{
 		while (strikes < 3 || balls < 4)
 		{
-			std::cout << HomeTeam << " " << runsHomeTeam << " - " << AwayTeam << " " << runsAwayTeam << std::endl;
+			std::cout << GetTeamAbbreviation(HomeTeam) << " " << runsHomeTeam << " - " << GetTeamAbbreviation(AwayTeam) << " " << runsAwayTeam << std::endl;
 			std::cout << "Field View - " << "1B: " << runnerOnFirst << " 2B: " << runnerOnSecond << " 3B: " << runnerOnThird << std::endl;
 			std::cout << "Outs: " << outs << std::endl;
 			std::cout << "----------------------------------------------------------------------------------------" << std::endl;
@@ -449,23 +520,23 @@ std::vector<int> InningData(int inningNumber, bool topInning, std::string HomeTe
 					// Attempt to move runners (if possible) TODO: Work on this logic....will be needed as base for rest of application
 					if (runnerOnFirst && !runnerOnSecond && !runnerOnThird)
 					{
-						runnerOnFirst = false;
-						runnerOnSecond = true;
+						runnerOnFirst = 0;
+						runnerOnSecond = 1;
 					}
 					else if(!runnerOnFirst && runnerOnSecond && !runnerOnThird)
 					{
-						runnerOnSecond = false;
-						runnerOnThird = true;
+						runnerOnSecond = 0;
+						runnerOnThird = 1;
 					}
 					if (runnerOnThird)
 					{
-						runnerOnThird = false;
+						runnerOnThird = 0;
 						if (topInning)
 							++runsAwayTeam;
 						else
 							++runsHomeTeam;
 					}
-					runnerOnFirst = true;
+					runnerOnFirst = 1;
 					
 					// reset balls and strikes
 					balls = 0;	
@@ -536,15 +607,30 @@ std::vector<int> InningData(int inningNumber, bool topInning, std::string HomeTe
 				std::cout << "1. Single" << std::endl;
 				std::cout << "2. Double" << std::endl;
 				std::cout << "3. Triple" << std::endl;
-				std::cout << "4. Home Rune" << std::endl;
+				std::cout << "4. Home Run" << std::endl;
 				std::cin >> hitChoice;
+
+				std::vector<int> baseData = getBaseData(hitChoice, runnerOnFirst, runnerOnSecond, runnerOnThird, runs);
 				
-				//getBaseData(hitType, );
+				// Add runs from baseData to the 'runs' variable
+				runs = baseData.back();
 				
+				baseData.pop_back();
+				runnerOnThird = baseData.back();
+				baseData.pop_back();
+				runnerOnSecond = baseData.back();
+				baseData.pop_back();
+				runnerOnFirst = baseData.back();
 			}
 		}
 	}
 
+	if (topInning == true)
+		runsHomeTeam = runs;
+	else
+		runsAwayTeam = runs;
+
+	// Push game data back into vector and return vector
 	gameData.push_back(pitchCount);
 	gameData.push_back(hits);
 	gameData.push_back(runsHomeTeam);
@@ -553,7 +639,7 @@ std::vector<int> InningData(int inningNumber, bool topInning, std::string HomeTe
 	return gameData;
 }
 
-std::vector<bool> getBaseData(int hitType, bool first, bool second, bool third, int runs)
+std::vector<int> getBaseData(int hitType, int first, int second, int third, int runs)
 {
 	//////////////////////////////////////////////
 	//
@@ -568,63 +654,63 @@ std::vector<bool> getBaseData(int hitType, bool first, bool second, bool third, 
 	//	NOTE: Generally advancing runner will be
 	///////////////////////////////////////////////
 
-	std::vector<bool> baseData;
+	std::vector<int> baseData;
 
 	// In the event of a walk or a single
 	if (hitType == 1 || hitType == 2)
 	{
 
-		if (first && !second && !third)
+		if ((first == 1) && (second == 0) && (third == 0))
 		{
-			first = true;
-			second = true;
-			third = false;
+			first = 1;
+			second = 1;
+			third = 0;
 		}
-		else if (first && second && !third)
+		else if ((first == 1) && (second == 1) && (third == 0))
 		{
-			first = true;
-			second = true;
-			third = true;
+			first = 1;
+			second = 1;
+			third = 1;
 		}
-		else if (first && second && third)
+		else if ((first == 1) && (second == 1) && (third == 1))
 		{
-			first = true;
-			second = true;
-			third = true;
+			first = 1;
+			second = 1;
+			third = 1;
 			++runs;
 		}
-		else if (first && !second && third)
+		else if ((first == 1) && (second == 0) && (third == 1))
 		{
-			first = true;
-			second = true;
-			third = false;
+			first = 1;
+			second = 1;
+			third = 0;
 			++runs;
 		}
-		else if (!first && second && third)
+		else if ((first == 0) && (second == 1) && (third == 1))
 		{
-			first = true;
-			second = false;
-			third = true;
+			first = 1;
+			second = 0;
+			third = 1;
 			++runs;
 		}
-		else if (!first && !second && third)
+		else if ((first == 0) && (second == 0) && (third == 1))
 		{
-			first = true;
-			second = false;
-			third = false;
+			first = 1;
+			second = 0;
+			third = 0;
 			++runs;
 		}
-		else if (!first && second && !third)
+		else if ((first == 0) && (second == 1) && (third == 0))
 		{
-			first = true;
-			second = false;
-			third = true;
+			first = 1;
+			second = 0;
+			third = 1;
 		}
-		else if (!first && !second && !third)
+		else if ((first == 0) && (second == 0) && (third == 0))
 		{
-			first = true;
-			second = false;
-			third = false;
+			first = 1;
+			second = 0;
+			third = 0;
 		}
 		else
 		{
@@ -633,38 +719,38 @@ std::vector<bool> getBaseData(int hitType, bool first, bool second, bool third, 
 	}
 	else if (hitType == 3)	// Double
 	{
-		if (first && second && third)
+		if ((first == 1) && (second == 1) && (third == 1))
 		{
-			first = false;
-			second = true;
-			third = true;
+			first = 0;
+			second = 1;
+			third = 1;
 			runs = runs + 2;
 		}
-		else if (first && !second && !third)
+		else if ((first == 1) && (second == 0) && (third == 0))
 		{
-			first = false;
-			second = true;
-			third = true;
+			first = 0;
+			second = 1;
+			third = 1;
 		}
-		else if (first && second && !third)
+		else if ((first == 1) && (second == 1) && (third == 0))
 		{	
-			first = false;
-			second = true;
-			third = true;
+			first = 0;
+			second = 1;
+			third = 1;
 			++runs;
 		}
-		else if (!first && second && third)
+		else if ((first == 0) && (second == 1) && (third == 1))
 		{
-			first = false;
-			second = true;
-			third = true;
+			first = 0;
+			second = 1;
+			third = 1;
 			++runs;
 		}
-		else if (!first && !second && third)
+		else if ((first == 0) && (second == 0) && (third == 1))
 		{
-			first = false;
-			second = true;
-			third = false;
+			first = 0;
+			second = 1;
+			third = 0;
 			++runs;
 		}
 		else
@@ -674,7 +760,7 @@ std::vector<bool> getBaseData(int hitType, bool first, bool second, bool third, 
 	}
 	else if (hitType == 4)	// Triple
 	{
-		if (first && second && third)
+		if ((first == 1) && (second == 1) && (third == 1))
 		{
 
 		}
@@ -685,29 +771,29 @@ std::vector<bool> getBaseData(int hitType, bool first, bool second, bool third, 
 	}
 	else if (hitType == 5)	// Home Run
 	{
-		if (first && second && third)	// Grand Slam
+		if ((first == 1) && (second == 1) && (third == 1))	// Grand Slam
 		{
-			first = false;
-			second = false;
-			third = false;
+			first = 0;
+			second = 0;
+			third = 0;
 			runs = runs + 4;
 		}
-		else if ((first && !second && !third) ||
-			(!first && second && !third) ||
-			(!first && !second && third))	// One Runner On
+		else if (((first == 1) && (second == 0) && (third == 0)) ||
+			((first == 0) && (second == 1) && (third == 0)) ||
+			((first == 0) && (second == 0) && (third == 0)))	// One Runner On
 		{
-			first = false;
-			second = false;
-			third = false;
+			first = 0;
+			second = 0;
+			third = 0;
 			runs = runs + 2;
 		}
-		else if ((first && second && !third) ||
-				(first && !second && third) ||
-				(!first && second && third))	// 2 Runners On
+		else if (((first == 1) && (second == 1) && (third == 0)) ||
+				((first == 1) && (second == 0) && (third == 1)) ||
+				((first == 0) && (second == 1) && (third == 1)))	// 2 Runners On
 		{
-			first = false;
-			second = false;
-			third = false;
+			first = 0;
+			second = 0;
+			third = 0;
 			runs = runs + 3;
 		}
 		else
