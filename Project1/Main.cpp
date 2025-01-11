@@ -13,6 +13,7 @@ std::string GetTeamAbbreviation(std::string Team);
 std::string SelectTeam(int TeamSelection);
 std::string SelectBallpark(int BallparkChoice);
 std::vector<int> InningData(int inningNumber, bool topInning, std::string HomeTeam, std::string AwayTeam);
+std::vector<int> getBaseData(int hitType, int first, int second, int third, int runs);
 
 int main()
 {
@@ -33,9 +34,10 @@ void MainMenu()
 		std::cout << std::endl;
 		std::cout << "Main Menu" << std::endl;
 		std::cout << "1. Score a new Game" << std::endl;
-		std::cout << "2. View Previous Games Scored" << std::endl;
-		std::cout << "3. See Overall Scoring Stats" << std::endl;
-		std::cout << "4. Quit" << std::endl;
+		std::cout << "2. Score Game Played in the Past" << std::endl;
+		std::cout << "3. View Previous Games Scored" << std::endl;
+		std::cout << "4. See Overall Scoring Stats" << std::endl;
+		std::cout << "5. Quit" << std::endl;
 		// idea for new funcitonality 'Compare Score Card to official MLB Score Card'
 		// query pitching rotation, players
 		// input historic information based on data online??
@@ -58,6 +60,11 @@ void MainMenu()
 			MainMenu();
 		}
 		else if (choice == 4)
+		{
+			std::cout << "Functionality Pending...Make Another Selection" << std::endl;
+			MainMenu();
+		}
+		else if (choice == 5)
 		{
 			//system("PAUSE");
 			return;
@@ -392,7 +399,7 @@ std::string GetTeamAbbreviation(std::string Team)
 		Abbreviation = "AZ";
 	else if (Team == "Atlanta Braves")
 		Abbreviation = "ATL";
-	else if (Team == "Baltimore Orioles ")
+	else if (Team == "Baltimore Orioles")
 		Abbreviation = "BAL";
 	else if (Team == "Boston Red Sox")
 		Abbreviation = "BOS";
@@ -613,22 +620,18 @@ std::vector<int> InningData(int inningNumber, bool topInning, std::string HomeTe
 				std::vector<int> baseData = getBaseData(hitChoice, runnerOnFirst, runnerOnSecond, runnerOnThird, runs);
 				
 				// Add runs from baseData to the 'runs' variable
-				runs = baseData.back();
-				
-				baseData.pop_back();
-				runnerOnThird = baseData.back();
-				baseData.pop_back();
-				runnerOnSecond = baseData.back();
-				baseData.pop_back();
-				runnerOnFirst = baseData.back();
+				runs += baseData[0];
+				runnerOnThird = baseData[1];
+				runnerOnSecond = baseData[2];
+				runnerOnFirst = baseData[3];
+
+				if (topInning == true)
+					runsHomeTeam += runs;
+				else
+					runsAwayTeam += runs;
 			}
 		}
 	}
-
-	if (topInning == true)
-		runsHomeTeam = runs;
-	else
-		runsAwayTeam = runs;
 
 	// Push game data back into vector and return vector
 	gameData.push_back(pitchCount);
