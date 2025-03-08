@@ -648,19 +648,21 @@ std::vector<int> getBaseData(int hitType, int first, int second, int third, int 
 	//
 	//	Guide to Hit Types
 	//
-	//	1 = Walk
-	//	2 = Single
-	//	3 = Double
-	//	4 = Triple
-	//	5 = Home Run
+	//	0 = Walk
+	//	1 = Single
+	//	2 = Double
+	//	3 = Triple
+	//	4 = Home Run
 	// 
 	//	NOTE: Generally advancing runner will be
 	///////////////////////////////////////////////
 
 	std::vector<int> baseData;
 
+	int newRuns = 0;
+
 	// In the event of a walk or a single
-	if (hitType == 1 || hitType == 2)
+	if (hitType == 0 || hitType == 1)
 	{
 
 		if ((first == 1) && (second == 0) && (third == 0))
@@ -680,28 +682,28 @@ std::vector<int> getBaseData(int hitType, int first, int second, int third, int 
 			first = 1;
 			second = 1;
 			third = 1;
-			++runs;
+			newRuns = ++runs;
 		}
 		else if ((first == 1) && (second == 0) && (third == 1))
 		{
 			first = 1;
 			second = 1;
 			third = 0;
-			++runs;
+			newRuns = ++runs;
 		}
 		else if ((first == 0) && (second == 1) && (third == 1))
 		{
 			first = 1;
 			second = 0;
 			third = 1;
-			++runs;
+			newRuns = ++runs;
 		}
 		else if ((first == 0) && (second == 0) && (third == 1))
 		{
 			first = 1;
 			second = 0;
 			third = 0;
-			++runs;
+			newRuns = ++runs;
 		}
 		else if ((first == 0) && (second == 1) && (third == 0))
 		{
@@ -720,14 +722,20 @@ std::vector<int> getBaseData(int hitType, int first, int second, int third, int 
 			std::cout << "Found a base mix you haven't written yet!!!" << std::endl;
 		}
 	}
-	else if (hitType == 3)	// Double
+	else if (hitType == 2)	// Double
 	{
-		if ((first == 1) && (second == 1) && (third == 1))
+		if ((first == 0) && (second == 0) && (third == 0))
+		{
+			first = 0;
+			second = 1;
+			third = 0;
+		}
+		else if ((first == 1) && (second == 1) && (third == 1))
 		{
 			first = 0;
 			second = 1;
 			third = 1;
-			runs = runs + 2;
+			newRuns = runs + 2;
 		}
 		else if ((first == 1) && (second == 0) && (third == 0))
 		{
@@ -740,46 +748,77 @@ std::vector<int> getBaseData(int hitType, int first, int second, int third, int 
 			first = 0;
 			second = 1;
 			third = 1;
-			++runs;
+			newRuns = ++runs;
 		}
 		else if ((first == 0) && (second == 1) && (third == 1))
 		{
 			first = 0;
 			second = 1;
-			third = 1;
-			++runs;
+			third = 0;
+			newRuns = runs + 2;
 		}
 		else if ((first == 0) && (second == 0) && (third == 1))
 		{
 			first = 0;
 			second = 1;
 			third = 0;
-			++runs;
+			newRuns = ++runs;
 		}
 		else
 		{
 			std::cout << "Found a base mix you haven't written yet!!!" << std::endl;
 		}
 	}
-	else if (hitType == 4)	// Triple
+	else if (hitType == 3)	// Triple
 	{
-		if ((first == 1) && (second == 1) && (third == 1))
+		if ((first == 0) && (second == 0) && (third == 0))
 		{
-
+			first = 0;
+			second = 0;
+			third = 1;
+		}
+		else if ((first == 1) && (second == 1) && (third == 1))
+		{
+			first = 0;
+			second = 0;
+			third = 1;
+			newRuns = runs + 3;
+		}
+		else if ((first == 0) && (second == 1) && (third == 1) ||
+				 (first == 1) && (second == 0) && (third == 1))
+		{
+			first = 0;
+			second = 0;
+			third = 1;
+			newRuns = runs + 2;
+		}
+		else if ((first == 1) && (second == 0) && (third == 1))
+		{
+			first = 0;
+			second = 0;
+			third = 1;
+			newRuns = runs + 2;
 		}
 		else
 		{
 			std::cout << "Found a base mix you haven't written yet!!!" << std::endl;
 		}
 	}
-	else if (hitType == 5)	// Home Run
+	else if (hitType == 4)	// Home Run
 	{
-		if ((first == 1) && (second == 1) && (third == 1))	// Grand Slam
+		if ((first == 0) && (second == 0) && (third == 0))
 		{
 			first = 0;
 			second = 0;
 			third = 0;
-			runs = runs + 4;
+			newRuns = ++runs;
+		}
+		else if ((first == 1) && (second == 1) && (third == 1))	// Grand Slam
+		{
+			first = 0;
+			second = 0;
+			third = 0;
+			newRuns = runs + 4;
 		}
 		else if (((first == 1) && (second == 0) && (third == 0)) ||
 			((first == 0) && (second == 1) && (third == 0)) ||
@@ -788,7 +827,7 @@ std::vector<int> getBaseData(int hitType, int first, int second, int third, int 
 			first = 0;
 			second = 0;
 			third = 0;
-			runs = runs + 2;
+			newRuns = runs + 2;
 		}
 		else if (((first == 1) && (second == 1) && (third == 0)) ||
 				((first == 1) && (second == 0) && (third == 1)) ||
@@ -797,7 +836,7 @@ std::vector<int> getBaseData(int hitType, int first, int second, int third, int 
 			first = 0;
 			second = 0;
 			third = 0;
-			runs = runs + 3;
+			newRuns = runs + 3;
 		}
 		else
 		{
@@ -809,7 +848,7 @@ std::vector<int> getBaseData(int hitType, int first, int second, int third, int 
 		std::cout << "A proper hit type was not given." << std::endl;
 	}
 
-	baseData.push_back(runs);
+	baseData.push_back(newRuns);
 	baseData.push_back(third);
 	baseData.push_back(second);
 	baseData.push_back(first);
