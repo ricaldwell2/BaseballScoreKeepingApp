@@ -40,7 +40,7 @@ void MainMenu()
 		std::cout << "5. Quit" << std::endl;
 		// idea for new funcitonality 'Compare Score Card to official MLB Score Card'
 		// query pitching rotation, players
-		// input historic information based on data online??
+		// input historic information based on data online?? *API Idea
 
 		std::cout << "Input: ";
 		std::cin >> choice;
@@ -511,6 +511,7 @@ std::vector<int> InningData(int inningNumber, bool topInning, std::string HomeTe
 			// TODO: Advance Base runner (could be due to a fielding error)
 			// TODO: Balk
 			// TODO: Intentional Walk
+			// TODO: Maybe another choice after hit for fielding errors?, ask user if base population outcome suggested is correct
 
 			if (choice == 1)
 			{
@@ -659,8 +660,6 @@ std::vector<int> getBaseData(int hitType, int first, int second, int third, int 
 
 	std::vector<int> baseData;
 
-	int newRuns = 0;
-
 	// In the event of a walk or a single
 	if (hitType == 0 || hitType == 1)
 	{
@@ -682,28 +681,28 @@ std::vector<int> getBaseData(int hitType, int first, int second, int third, int 
 			first = 1;
 			second = 1;
 			third = 1;
-			newRuns = ++runs;
+			++runs;
 		}
 		else if ((first == 1) && (second == 0) && (third == 1))
 		{
 			first = 1;
 			second = 1;
 			third = 0;
-			newRuns = ++runs;
+			++runs;
 		}
 		else if ((first == 0) && (second == 1) && (third == 1))
 		{
 			first = 1;
 			second = 0;
 			third = 1;
-			newRuns = ++runs;
+			++runs;
 		}
 		else if ((first == 0) && (second == 0) && (third == 1))
 		{
 			first = 1;
 			second = 0;
 			third = 0;
-			newRuns = ++runs;
+			++runs;
 		}
 		else if ((first == 0) && (second == 1) && (third == 0))
 		{
@@ -735,7 +734,7 @@ std::vector<int> getBaseData(int hitType, int first, int second, int third, int 
 			first = 0;
 			second = 1;
 			third = 1;
-			newRuns = runs + 2;
+			runs += 2;
 		}
 		else if ((first == 1) && (second == 0) && (third == 0))
 		{
@@ -748,21 +747,28 @@ std::vector<int> getBaseData(int hitType, int first, int second, int third, int 
 			first = 0;
 			second = 1;
 			third = 1;
-			newRuns = ++runs;
+			++runs;
 		}
 		else if ((first == 0) && (second == 1) && (third == 1))
 		{
 			first = 0;
 			second = 1;
 			third = 0;
-			newRuns = runs + 2;
+			runs += 2;
 		}
 		else if ((first == 0) && (second == 0) && (third == 1))
 		{
 			first = 0;
 			second = 1;
 			third = 0;
-			newRuns = ++runs;
+			++runs;
+		}
+		else if ((first == 1) && (second == 0) && (third == 1))
+		{
+			first = 0;
+			second = 1;
+			third = 1;
+			++runs;
 		}
 		else
 		{
@@ -782,22 +788,25 @@ std::vector<int> getBaseData(int hitType, int first, int second, int third, int 
 			first = 0;
 			second = 0;
 			third = 1;
-			newRuns = runs + 3;
+			runs += 3;
 		}
 		else if ((first == 0) && (second == 1) && (third == 1) ||
-				 (first == 1) && (second == 0) && (third == 1))
+				 (first == 1) && (second == 0) && (third == 1) ||
+				 (first == 1) && (second == 1) && (third == 0))
 		{
 			first = 0;
 			second = 0;
 			third = 1;
-			newRuns = runs + 2;
+			runs += 2;
 		}
-		else if ((first == 1) && (second == 0) && (third == 1))
+		else if ((first == 1) && (second == 0) && (third == 0) ||
+				 (first == 0) && (second == 1) && (third == 0) ||
+				 (first == 0) && (second == 0) && (third == 1))	// One Runner On
 		{
 			first = 0;
 			second = 0;
 			third = 1;
-			newRuns = runs + 2;
+			runs += 1;
 		}
 		else
 		{
@@ -806,28 +815,21 @@ std::vector<int> getBaseData(int hitType, int first, int second, int third, int 
 	}
 	else if (hitType == 4)	// Home Run
 	{
-		if ((first == 0) && (second == 0) && (third == 0))
+		if ((first == 0) && (second == 0) && (third == 0))	// Bases Empty
 		{
 			first = 0;
 			second = 0;
 			third = 0;
-			newRuns = ++runs;
-		}
-		else if ((first == 1) && (second == 1) && (third == 1))	// Grand Slam
-		{
-			first = 0;
-			second = 0;
-			third = 0;
-			newRuns = runs + 4;
+			++runs;
 		}
 		else if (((first == 1) && (second == 0) && (third == 0)) ||
 			((first == 0) && (second == 1) && (third == 0)) ||
-			((first == 0) && (second == 0) && (third == 0)))	// One Runner On
+			((first == 0) && (second == 0) && (third == 1)))	// One Runner On
 		{
 			first = 0;
 			second = 0;
 			third = 0;
-			newRuns = runs + 2;
+			runs += 2;
 		}
 		else if (((first == 1) && (second == 1) && (third == 0)) ||
 				((first == 1) && (second == 0) && (third == 1)) ||
@@ -836,7 +838,14 @@ std::vector<int> getBaseData(int hitType, int first, int second, int third, int 
 			first = 0;
 			second = 0;
 			third = 0;
-			newRuns = runs + 3;
+			runs += 3;
+		}
+		else if ((first == 1) && (second == 1) && (third == 1))	// Grand Slam
+		{
+			first = 0;
+			second = 0;
+			third = 0;
+			runs += 4;
 		}
 		else
 		{
@@ -848,7 +857,7 @@ std::vector<int> getBaseData(int hitType, int first, int second, int third, int 
 		std::cout << "A proper hit type was not given." << std::endl;
 	}
 
-	baseData.push_back(newRuns);
+	baseData.push_back(runs);
 	baseData.push_back(third);
 	baseData.push_back(second);
 	baseData.push_back(first);
